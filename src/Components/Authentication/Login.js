@@ -2,8 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
-import { googleSignInPopup, facebookSignInPopup } from "./AuthCore";
 import firebase from "firebase/app";
+import "firebase/auth";
+import { connect } from "react-redux";
+import { authUser } from "../../action";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MainContainer = styled.div`
   background-color: #ffffff;
@@ -216,14 +220,84 @@ const FireBaseLogo = styled.div`
   }
 `;
 
-const Login = () => {
+const Login = (props) => {
   const googleSignin = () => {
-    let provider = new firebase.auth.GoogleAuthProvider();
-    googleSignInPopup(provider);
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase
+      .auth()
+      .signInWithPopup(provider)
+      .then((result) => {
+        const user = result.user;
+        const userState = {
+          authenticated: true,
+          user: {
+            name: user.displayName,
+            uid: user.uid,
+            email: user.email,
+          },
+          error: "",
+          isLoaded: true,
+        };
+        props.dispatch(authUser(userState));
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        const userState = {
+          authenticated: false,
+          user: "",
+          error: errorMessage,
+          isLoaded: true,
+        };
+        props.dispatch(authUser(userState));
+        toast.error(errorMessage, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
   };
   const facebookSignin = () => {
-    let provider = new firebase.auth.FacebookAuthProvider();
-    facebookSignInPopup(provider);
+    const provider = new firebase.auth.FacebookAuthProvider();
+    firebase
+      .auth()
+      .signInWithPopup(provider)
+      .then((result) => {
+        const user = result.user;
+        const userState = {
+          authenticated: true,
+          user: {
+            name: user.displayName,
+            uid: user.uid,
+            email: user.email,
+          },
+          error: "",
+          isLoaded: true,
+        };
+        props.dispatch(authUser(userState));
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        const userState = {
+          authenticated: false,
+          user: "",
+          error: errorMessage,
+          isLoaded: true,
+        };
+        props.dispatch(authUser(userState));
+        toast.error(errorMessage, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
   };
   return (
     <MainContainer>
@@ -273,8 +347,22 @@ const Login = () => {
       <FireBaseLogo>
         <Icon icon="logos:firebase" color="#4267b2" width="56" height="56" />
       </FireBaseLogo>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </MainContainer>
   );
 };
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
 
-export default Login;
+export default connect(mapStateToProps)(Login);

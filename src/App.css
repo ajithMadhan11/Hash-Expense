@@ -2,6 +2,6 @@
 
 * {
   margin: 0px;
-  overflow: hidden;
+  overflow-x: hidden;
   font-family: 'Josefin Sans', sans-serif;
 }
