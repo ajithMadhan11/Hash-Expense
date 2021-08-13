@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
 import { connect } from "react-redux";
@@ -221,6 +221,8 @@ const FireBaseLogo = styled.div`
 `;
 
 const Login = (props) => {
+  const history = useHistory();
+
   const googleSignin = () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase
@@ -299,6 +301,70 @@ const Login = (props) => {
         });
       });
   };
+  const [state, setstate] = useState({
+    email: "",
+    password: "",
+    buttonText: "signin",
+  });
+  const { email, password, buttonText } = state;
+  const handleChange = (name) => (e) => {
+    setstate({ ...state, [name]: e.target.value });
+  };
+  const submitForm = (e) => {
+    e.preventDefault();
+    setstate({ ...state, buttonText: "signing in ..." });
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        setstate({
+          email: "",
+          password: "",
+          buttonText: "Redirecting ...",
+        });
+        const userState = {
+          authenticated: true,
+          user: {
+            name: "",
+            uid: user.uid,
+            email: user.email,
+          },
+          error: "",
+          isLoaded: true,
+        };
+        props.dispatch(authUser(userState));
+        history.push("/");
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        setstate({
+          email: "",
+          password: "",
+          buttonText: "signin",
+        });
+        const userState = {
+          authenticated: true,
+          user: {
+            name: "",
+            uid: "",
+            email: "",
+          },
+          error: errorMessage,
+          isLoaded: true,
+        };
+        props.dispatch(authUser(userState));
+        toast.error(errorMessage, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  };
   return (
     <MainContainer>
       <SideComponent>
@@ -321,10 +387,20 @@ const Login = (props) => {
         </SocialLoginconatainer>
         <Divider>OR</Divider>
         <FormContainer>
-          <Input type={"text"} placeholder="Enter your Email" />
-          <Input type={"password"} placeholder="Enter your Password" />
+          <Input
+            type={"text"}
+            placeholder="Enter your Email"
+            value={email}
+            onChange={handleChange("email")}
+          />
+          <Input
+            type={"password"}
+            placeholder="Enter your Password"
+            value={password}
+            onChange={handleChange("password")}
+          />
           <Forgetbtn>Forgot password?</Forgetbtn>
-          <SubmitBtn>Signin</SubmitBtn>
+          <SubmitBtn onClick={submitForm}>{buttonText}</SubmitBtn>
         </FormContainer>
         <LastConatainer>
           {" "}
