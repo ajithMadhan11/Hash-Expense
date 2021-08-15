@@ -12,7 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 const NavbarConatainer = styled.div`
   width: 100%;
   height: 50px;
-  background-color: #b2d9e1;
+  background-color: #2a2a40;
+  /* background-color: #ffffff; */
   display: flex;
   justify-content: space-between;
   justify-items: center;
@@ -26,7 +27,8 @@ const MobileNavbar = styled.div`
     bottom: 0;
     width: 100%;
     height: 50px;
-    background-color: #b2d9e1;
+    background-color: #2a2a40;
+
     display: flex;
     justify-content: space-evenly;
     justify-items: center;
@@ -34,7 +36,7 @@ const MobileNavbar = styled.div`
   }
 `;
 const NavbarTitle = styled.h3`
-  color: #000000;
+  color: #ffffff;
   margin-left: 10px;
 `;
 const NavbarMenu = styled.div`
@@ -46,11 +48,11 @@ const NavbarMenu = styled.div`
 `;
 const MobileNavbarItems = styled.div`
   font-size: medium;
-  color: #000000;
+  color: #ffffff;
 `;
 const MenuItems = styled.p`
   font-size: medium;
-  color: #000000;
+  color: #ffffff;
   margin-right: 20px;
 `;
 const LogoutBtn = styled.span`
@@ -58,7 +60,7 @@ const LogoutBtn = styled.span`
   margin-right: 20px;
   color: #f90707;
   text-decoration: none;
-  background-color: #b2d9e1;
+  background-color: #2a2a40;
   &:hover {
     cursor: pointer;
   }
@@ -68,13 +70,13 @@ const currenttab = (history, path) => {
     return {
       color: "#27b05a",
       textDecoration: "none",
-      backgroundColor: "#b2d9e1",
+      backgroundColor: "#2A2A40",
     };
   } else {
     return {
-      color: "black",
+      color: "#ffffff",
       textDecoration: "none",
-      backgroundColor: "#b2d9e1",
+      backgroundColor: "#2A2A40",
     };
   }
 };

@@ -1,10 +1,12 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import "firebase/database";
 
-var app = {
+const app = {
   apiKey: "AIzaSyDkA7_68QcrXxgdI84lh6tkOOZfsSULVZE",
   authDomain: "expense-tracker-c0145.firebaseapp.com",
+  databaseURL: "https://expense-tracker-c0145-default-rtdb.firebaseio.com",
   projectId: "expense-tracker-c0145",
   storageBucket: "expense-tracker-c0145.appspot.com",
   messagingSenderId: "779290897206",
@@ -14,5 +16,5 @@ var app = {
 // Initialize Firebase
 const firebaseApp = firebase.initializeApp(app);
 const auth = firebase.auth();
-
-export { auth };
+const database = firebase.database();
+export { database, auth };

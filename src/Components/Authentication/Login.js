@@ -241,6 +241,7 @@ const Login = (props) => {
           isLoaded: true,
         };
         props.dispatch(authUser(userState));
+        history.push("/");
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -280,6 +281,7 @@ const Login = (props) => {
           isLoaded: true,
         };
         props.dispatch(authUser(userState));
+        history.push("/");
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -403,7 +405,6 @@ const Login = (props) => {
           <SubmitBtn onClick={submitForm}>{buttonText}</SubmitBtn>
         </FormContainer>
         <LastConatainer>
-          {" "}
           <SignUpBtn>Not a user yet?</SignUpBtn>
           <SignupBtnText>
             <Link
@@ -414,7 +415,6 @@ const Login = (props) => {
               }}
               to="/signup"
             >
-              {" "}
               &nbsp;Signup
             </Link>
           </SignupBtnText>
