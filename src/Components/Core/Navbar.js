@@ -36,7 +36,10 @@ const MobileNavbar = styled.div`
   }
 `;
 const NavbarTitle = styled.h3`
+  font-family: "Pacifico", cursive;
   color: #ffffff;
+  font-weight: 200;
+  letter-spacing: 1px;
   margin-left: 10px;
 `;
 const NavbarMenu = styled.div`
@@ -108,7 +111,7 @@ const Navbar = (props) => {
   return (
     <NavbarConatainer>
       <NavbarTitle>
-        <Icon icon="icon-park:hashtag-key" /> Hash your Expense
+        <Icon icon="ri:hashtag" color="white" /> Hash your Expense
       </NavbarTitle>
       <ToastContainer
         position="top-center"
