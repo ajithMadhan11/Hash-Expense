@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
 
@@ -105,11 +105,16 @@ const RecordsBtn = styled.p`
 `;
 const Hometable = () => {
   const someArray = [1, 2, 3];
+  const tableRef = useRef();
+  const printTableData = () => {
+    //componet to print ref is created already check it
+    window.print();
+  };
   return (
     <Tablecontainer>
       <BtnContainer>
         <PrintContainer>
-          <PrintBtn2>
+          <PrintBtn2 onClick={printTableData}>
             <Icon icon="fluent:print-20-filled" color="#b72136" /> print
           </PrintBtn2>
           <PrintBtn>
@@ -120,7 +125,7 @@ const Hometable = () => {
         <RecordsBtn>3 records</RecordsBtn>
       </BtnContainer>
 
-      <CustomTable>
+      <CustomTable ref={tableRef}>
         <tbody>
           <TableRow>
             <th className="last">#</th>

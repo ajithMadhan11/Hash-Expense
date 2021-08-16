@@ -142,6 +142,7 @@ const Home = (props) => {
 
   const handleChange = (name) => (e) => {
     setstate({ ...state, [name]: e.target.value });
+    getTotalExpenseOfaUser(uid);
   };
   const submitForm = async (e) => {
     e.preventDefault();
@@ -165,7 +166,6 @@ const Home = (props) => {
       draggable: true,
       progress: undefined,
     });
-    getTotalExpenseOfaUser(uid);
   };
   return (
     <>

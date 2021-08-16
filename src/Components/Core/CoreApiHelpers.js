@@ -20,11 +20,5 @@ export const getTotalExpenseOfaUser = (userId) => {
   return firebase
     .database()
     .ref(`users/${userId}/`)
-    .once("value")
-    .then((snapshot) => {
-      const expenses = (snapshot.val() && snapshot.val().expenses) || 0;
-      for (const expense in expenses) {
-        console.log(expense.expense);
-      }
-    });
+    .on("value", (snapshot) => {});
 };
