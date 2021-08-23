@@ -1,6 +1,8 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
+import { connect } from "react-redux";
+import { getTotalExpenseOfaUser } from "./Core/CoreApiHelpers";
 
 const CustomTable = styled.table`
   width: 100%;
@@ -103,7 +105,15 @@ const RecordsBtn = styled.p`
   color: #b72136;
   width: 200px;
 `;
-const Hometable = () => {
+const Hometable = (props) => {
+  const [allExpenses, setallExpenses] = useState("");
+  const uid = props.auth.user.uid;
+  useEffect(() => {
+    getTotalExpenseOfaUser(uid);
+    // getTotalExpenseOfaUser(uid);
+    // console.log(expense);
+  }, []);
+
   const someArray = [1, 2, 3];
   const tableRef = useRef();
   const printTableData = () => {
@@ -165,5 +175,7 @@ const Hometable = () => {
     </Tablecontainer>
   );
 };
-
-export default Hometable;
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+export default connect(mapStateToProps)(Hometable);

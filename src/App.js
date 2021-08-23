@@ -8,7 +8,6 @@ import Home from "./Components/Core/Home";
 import Loader from "./Components/Loader";
 
 const App = (props) => {
-  console.log(props.auth);
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {

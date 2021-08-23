@@ -41,7 +41,7 @@ const HomeCards = () => {
     <CardContainer>
       <CardField>
         <FieldName>Overall Spent</FieldName>
-        <FieldAmount>₹ 30,000</FieldAmount>
+        <FieldAmount>₹ 1,00,000</FieldAmount>
       </CardField>
       <Icon icon="emojione:money-bag" width="64" height="64" />
     </CardContainer>
