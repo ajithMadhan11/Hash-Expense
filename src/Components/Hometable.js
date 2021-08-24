@@ -1,13 +1,13 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
 import { connect } from "react-redux";
-import { getTotalExpenseOfaUser } from "./Core/CoreApiHelpers";
+import "firebase/firestore";
 
 const CustomTable = styled.table`
   width: 100%;
   margin: 10px;
-
+  table-layout: fixed;
   border-collapse: collapse;
   th {
     background-color: #f4f6f8;
@@ -37,6 +37,12 @@ const CustomTable = styled.table`
     width: 100px;
   }
 `;
+const CategoryWrapper = styled.td`
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+`;
+const CategoryText = styled.p``;
 const Tablecontainer = styled.div`
   box-shadow: 0px 0px 23px -4px rgba(162, 162, 162, 0.25);
   border-radius: 15px;
@@ -48,7 +54,12 @@ const Tablecontainer = styled.div`
     display: none;
   }
 `;
-const TableRow = styled.tr``;
+const TableRow = styled.tr`
+  &:hover {
+    background-color: #f4f6f8;
+    cursor: pointer;
+  }
+`;
 const EditBtn = styled.span`
   font-size: small;
   color: #b78103;
@@ -105,20 +116,34 @@ const RecordsBtn = styled.p`
   color: #b72136;
   width: 200px;
 `;
-const Hometable = (props) => {
-  const [allExpenses, setallExpenses] = useState("");
-  const uid = props.auth.user.uid;
-  useEffect(() => {
-    getTotalExpenseOfaUser(uid);
-    // getTotalExpenseOfaUser(uid);
-    // console.log(expense);
-  }, []);
-
-  const someArray = [1, 2, 3];
+const EmptyTableCotainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  width: max-content;
+`;
+const Hometable = ({ allExpenses }) => {
   const tableRef = useRef();
   const printTableData = () => {
-    //componet to print ref is created already check it
     window.print();
+  };
+  let categoriesTotal = {
+    moneyBag: "emojione:money-bag",
+    flyMoney: "emojione-v1:money-with-wings",
+    Foods: "emojione:pot-of-food",
+    Automobile: "emojione-v1:racing-car",
+    Enterainment: "twemoji:party-popper",
+    Clothing: "emojione-v1:womans-clothes",
+    Healthcare: "icon-park:health",
+    Travel: "emojione:tram-car",
+    Shopping: "emojione-v1:shopping-bags",
+    "Personal Care": "emojione:beating-heart",
+    Investments: "emojione-v1:stock-chart",
+    "Gifts & Donations": "emojione:wrapped-gift",
+    "Bills & utiltites": "flat-color-icons:money-transfer",
+    Others: "noto:coin",
   };
   return (
     <Tablecontainer>
@@ -132,7 +157,7 @@ const Hometable = (props) => {
             xls
           </PrintBtn>
         </PrintContainer>
-        <RecordsBtn>3 records</RecordsBtn>
+        <RecordsBtn>{allExpenses.length} records</RecordsBtn>
       </BtnContainer>
 
       <CustomTable ref={tableRef}>
@@ -146,31 +171,45 @@ const Hometable = (props) => {
             <th className="last">Edit</th>
             <th className="last">Delete</th>
           </TableRow>
+
+          {allExpenses[0] ? (
+            allExpenses.map((expense, index) => {
+              return (
+                <TableRow key={expense.id}>
+                  <td className="last">{index + 1}</td>
+                  <td className="mid">{expense.expense.date}</td>
+                  <td className="mid">{expense.expense.expense}</td>
+                  <CategoryWrapper>
+                    <CategoryText>{expense.expense.category}</CategoryText>
+                    <Icon
+                      icon={categoriesTotal[expense.expense.category]}
+                      width="24"
+                      height="24"
+                    />
+                  </CategoryWrapper>
+                  <td className="comment">{expense.expense.comments}</td>
+                  <td className="last">
+                    <EditBtn>
+                      <Icon icon="ci:edit" color="#b78103" /> edit
+                    </EditBtn>
+                  </td>
+                  <td className="last">
+                    <DelBtn>
+                      <Icon icon="fluent:delete-48-filled" color="#b72136" />
+                      delete
+                    </DelBtn>
+                  </td>
+                </TableRow>
+              );
+            })
+          ) : (
+            <EmptyTableCotainer>
+              <p style={{ marginTop: "30px", opacity: 0.5 }}>
+                No data found 😓 Click on the ➕ icon to add Expense
+              </p>
+            </EmptyTableCotainer>
+          )}
         </tbody>
-        {Object.values(someArray).map((value, index) => {
-          return (
-            <tbody>
-              <TableRow key={index}>
-                <td className="last">{value}</td>
-                <td className="mid">{value}</td>
-                <td className="mid">{value}</td>
-                <td className="mid">{value}</td>
-                <td className="comment">{value}</td>
-                <td className="last">
-                  <EditBtn>
-                    <Icon icon="ci:edit" color="#b78103" /> edit
-                  </EditBtn>
-                </td>
-                <td className="last">
-                  <DelBtn>
-                    <Icon icon="fluent:delete-48-filled" color="#b72136" />{" "}
-                    delete
-                  </DelBtn>
-                </td>
-              </TableRow>
-            </tbody>
-          );
-        })}
       </CustomTable>
     </Tablecontainer>
   );

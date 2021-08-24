@@ -1,6 +1,4 @@
-import firebase from "firebase/app";
 import "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
 import { database } from "../../FirebaseConfig";
 
 export const addExpenseToDatabase = (
@@ -26,17 +24,72 @@ export const addExpenseToDatabase = (
     });
 };
 
-export const getTotalExpenseOfaUser = (userId) => {
-  const expenseList = [];
-  database
-    .collection(userId)
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        // doc.data() is never undefined for query doc snapshots
-        expenseList.push(doc.data());
-        // console.log(doc.id, " => ", doc.data());
-      });
+export const totalExpense = (allExpense) => {
+  let totalAmt = 0;
+  if (allExpense[0]) {
+    totalAmt = allExpense.reduce((sum, expense) => {
+      return (sum += parseInt(expense.expense.expense));
+    }, 0);
+  }
+  return totalAmt == 0 ? 0 : totalAmt;
+};
+
+export const monthlyExpense = (allExpense) => {
+  let totalAmt = 0;
+  if (allExpense[0]) {
+    const month = new Date().getMonth();
+    const thisMonths = allExpense.filter((expense) => {
+      return new Date(expense.expense.date).getMonth() == month;
     });
-  console.log(expenseList);
+
+    if (thisMonths[0]) {
+      totalAmt = thisMonths.reduce((sum, expense) => {
+        return (sum += parseInt(expense.expense.expense));
+      }, 0);
+    }
+    return totalAmt == 0 ? 0 : totalAmt;
+  }
+};
+
+export const expenseOfEachCategory = (allExpense) => {
+  const categories = [
+    "Foods",
+    "Automobile",
+    "Enterainment",
+    "Clothing",
+    "Healthcare",
+    "Travel",
+    "Shopping",
+    "Personal Care",
+    "Investments",
+    "Gifts & Donations",
+    "Bills & utiltites",
+    "Others",
+  ];
+  let categoriesTotal = {
+    Foods: 0,
+    Automobile: 0,
+    Enterainment: 0,
+    Clothing: 0,
+    Healthcare: 0,
+    Travel: 0,
+    Shopping: 0,
+    "Personal Care": 0,
+    Investments: 0,
+    "Gifts & Donations": 0,
+    "Bills & utiltites": 0,
+    Others: 0,
+  };
+
+  const findTotal = (category, expenses) => {
+    let temp = expenses
+      .filter((expense) => expense.expense.category === category)
+      .reduce((sum, expense) => {
+        return (sum += Number(expense.expense.expense));
+      }, 0);
+    categoriesTotal = { ...categoriesTotal, [category]: temp };
+  };
+
+  categories.map((category) => findTotal(category, allExpense));
+  return categoriesTotal;
 };

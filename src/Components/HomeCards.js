@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
+import { useLocation } from "react-router";
 
 const CardContainer = styled.div`
   width: 30%;
@@ -36,14 +37,37 @@ const FieldAmount = styled.p`
   font-weight: 600;
   color: #27b05a;
 `;
-const HomeCards = () => {
+const HomeCards = ({ data, type, icon }) => {
+  function numberWithCommas(x) {
+    if (typeof x != "number") {
+      return x;
+    } else {
+      return "₹" + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+  }
+  let categoriesTotal = {
+    moneyBag: "emojione:money-bag",
+    flyMoney: "emojione-v1:money-with-wings",
+    Foods: "emojione:pot-of-food",
+    Automobile: "emojione-v1:racing-car",
+    Enterainment: "twemoji:party-popper",
+    Clothing: "emojione-v1:womans-clothes",
+    Healthcare: "icon-park:health",
+    Travel: "emojione:tram-car",
+    Shopping: "emojione-v1:shopping-bags",
+    "Personal Care": "emojione:beating-heart",
+    Investments: "emojione-v1:stock-chart",
+    "Gifts & Donations": "emojione:wrapped-gift",
+    "Bills & utiltites": "flat-color-icons:money-transfer",
+    Others: "noto:coin",
+  };
   return (
     <CardContainer>
       <CardField>
-        <FieldName>Overall Spent</FieldName>
-        <FieldAmount>₹ 1,00,000</FieldAmount>
+        <FieldName>{type}</FieldName>
+        <FieldAmount>{numberWithCommas(data) || "-"}</FieldAmount>
       </CardField>
-      <Icon icon="emojione:money-bag" width="64" height="64" />
+      <Icon icon={categoriesTotal[icon]} width="64" height="64" />
     </CardContainer>
   );
 };

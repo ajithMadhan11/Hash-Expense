@@ -1,15 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import HomeCards from "../HomeCards";
 import Hometable from "../Hometable";
 import Navbar from "./Navbar";
 import { Icon } from "@iconify/react";
+import Loader from "../Loader";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
-import { addExpenseToDatabase, getTotalExpenseOfaUser } from "./CoreApiHelpers";
+import {
+  addExpenseToDatabase,
+  expenseOfEachCategory,
+  monthlyExpense,
+  totalExpense,
+} from "./CoreApiHelpers";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { database } from "../../FirebaseConfig";
 
 const MainContainer = styled.div`
   display: flex;
@@ -126,7 +133,62 @@ const SubmitBtn = styled.button`
 `;
 const ModalHeader = styled.h3``;
 const Home = (props) => {
+  const [allExpenses, setallExpenses] = useState([]);
+  const [cardData, setcardData] = useState({
+    totalExpense: 0,
+    monthExpense: 0,
+    categoryTotal: 0,
+    maxCategory: "-",
+    isloaded: false,
+  });
+
   const uid = props.auth.user.uid;
+  useEffect(() => {
+    getTotalExpenseOfaUser(uid);
+  }, []);
+
+  useEffect(() => {
+    const totalexp = totalExpense(allExpenses);
+    const monthexp = monthlyExpense(allExpenses);
+    const catTotal = expenseOfEachCategory(allExpenses);
+    const maxCat = maxCategory(catTotal);
+
+    setcardData({
+      ...cardData,
+      ["totalExpense"]: totalexp,
+      ["monthExpense"]: monthexp,
+      ["categoryTotal"]: catTotal,
+      ["maxCategory"]: maxCat,
+      ["isloaded"]: true,
+    });
+  }, [allExpenses]);
+
+  const getTotalExpenseOfaUser = (userId) => {
+    database
+      .collection(userId)
+      .orderBy("date", "desc")
+      // .limit(3)
+      .onSnapshot((snapshot) => {
+        setallExpenses(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            expense: doc.data(),
+          }))
+        );
+      });
+  };
+
+  const maxCategory = (categories) => {
+    let max = 0;
+    let maxCategory;
+    for (let category in categories) {
+      if (categories[category] > max) {
+        max = categories[category];
+        maxCategory = category;
+      }
+    }
+    return maxCategory;
+  };
 
   const [open, setOpen] = useState(false);
   const onOpenModal = () => setOpen(true);
@@ -145,6 +207,17 @@ const Home = (props) => {
   };
   const submitForm = async (e) => {
     e.preventDefault();
+    if (date == "" || category == "" || expense == "" || comments == "") {
+      return toast.error("Please fill all the fields", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
     setstate({ ...state, [buttonText]: "Adding expense..." });
     await addExpenseToDatabase(uid, date, category, expense, comments);
     setOpen(false);
@@ -158,7 +231,7 @@ const Home = (props) => {
 
     toast.success("Expense Added! 🥳", {
       position: "top-center",
-      autoClose: 5000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
@@ -201,10 +274,10 @@ const Home = (props) => {
             <option value="Healthcare">Healthcare</option>
             <option value="Travel">Travel</option>
             <option value="Shopping">Shopping</option>
-            <option value="PersonalCare">PersonalCare</option>
+            <option value="Personal Care">PersonalCare</option>
             <option value="Investments">Investments</option>
-            <option value="Gifts&Donations">Gifts & Donations</option>
-            <option value="Bills&utiltites">Bills & utiltites</option>
+            <option value="Gifts & Donations">Gifts & Donations</option>
+            <option value="Bills & utiltites">Bills & utiltites</option>
             <option value="Others">Others</option>
           </Select>
           <StyledTextarea
@@ -217,12 +290,29 @@ const Home = (props) => {
         </ModalContainer>
       </Modal>
       <Navbar />
-      <MainContainer>
-        <HomeCards />
-        <HomeCards />
-        <HomeCards />
-      </MainContainer>
-      <Hometable />
+      {cardData.isloaded ? (
+        <MainContainer>
+          <HomeCards
+            data={cardData.totalExpense}
+            type={"Total Expense"}
+            icon={"moneyBag"}
+          />
+          <HomeCards
+            data={cardData.monthExpense}
+            type={"Monthly Expense"}
+            icon={"flyMoney"}
+          />
+          <HomeCards
+            data={cardData.maxCategory}
+            type={"Most Spent on"}
+            icon={cardData.maxCategory}
+          />
+        </MainContainer>
+      ) : (
+        <Loader />
+      )}
+
+      <Hometable allExpenses={allExpenses} />
       <AddBtn onClick={onOpenModal}>+</AddBtn>
 
       <ToastContainer
