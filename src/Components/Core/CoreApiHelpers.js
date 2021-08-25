@@ -24,6 +24,31 @@ export const addExpenseToDatabase = (
     });
 };
 
+export const editExpenseToDatabase = (
+  docId,
+  userId,
+  date,
+  category,
+  expense,
+  comments
+) => {
+  database
+    .collection(userId)
+    .doc(docId)
+    .update({
+      date: date,
+      category: category,
+      expense: expense,
+      comments: comments,
+    })
+    .then(() => {
+      console.log("Expense updated successfully..!");
+    })
+    .catch(() => {
+      console.log("Error updated the expense..!");
+    });
+};
+
 export const totalExpense = (allExpense) => {
   let totalAmt = 0;
   if (allExpense[0]) {

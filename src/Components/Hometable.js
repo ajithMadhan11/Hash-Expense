@@ -1,8 +1,12 @@
-import React, { useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { Icon } from "@iconify/react";
 import { connect } from "react-redux";
 import "firebase/firestore";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import TableData from "./TableData";
+import exportFromJSON from "export-from-json";
 
 const CustomTable = styled.table`
   width: 100%;
@@ -37,12 +41,7 @@ const CustomTable = styled.table`
     width: 100px;
   }
 `;
-const CategoryWrapper = styled.td`
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-`;
-const CategoryText = styled.p``;
+
 const Tablecontainer = styled.div`
   box-shadow: 0px 0px 23px -4px rgba(162, 162, 162, 0.25);
   border-radius: 15px;
@@ -57,26 +56,6 @@ const Tablecontainer = styled.div`
 const TableRow = styled.tr`
   &:hover {
     background-color: #f4f6f8;
-    cursor: pointer;
-  }
-`;
-const EditBtn = styled.span`
-  font-size: small;
-  color: #b78103;
-  background-color: #fff5d7;
-  border-radius: 10px;
-  padding: 5px;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-const DelBtn = styled.span`
-  font-size: small;
-  color: #b72136;
-  background-color: #ffe1e0;
-  border-radius: 10px;
-  padding: 5px;
-  &:hover {
     cursor: pointer;
   }
 `;
@@ -116,7 +95,7 @@ const RecordsBtn = styled.p`
   color: #b72136;
   width: 200px;
 `;
-const EmptyTableCotainer = styled.div`
+const EmptyTableCotainer = styled.td`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -124,27 +103,65 @@ const EmptyTableCotainer = styled.div`
   align-items: center;
   width: max-content;
 `;
-const Hometable = ({ allExpenses }) => {
+const SearchBox = styled.input.attrs((props) => ({
+  type: props.type,
+}))`
+  font-size: 14px;
+  border: 0.5px solid lightgrey;
+  border-radius: 5px;
+  width: 70%;
+  height: 30px;
+  padding: 3px;
+  margin-top: 5px;
+  &:focus {
+    outline: none;
+    border-radius: 5px;
+    border: 1px solid #27b05a;
+  }
+  @media (max-width: 768px) {
+    width: 280px;
+    padding: 10px;
+  }
+`;
+const Hometable = ({ allExpenses, auth }) => {
   const tableRef = useRef();
   const printTableData = () => {
     window.print();
   };
-  let categoriesTotal = {
-    moneyBag: "emojione:money-bag",
-    flyMoney: "emojione-v1:money-with-wings",
-    Foods: "emojione:pot-of-food",
-    Automobile: "emojione-v1:racing-car",
-    Enterainment: "twemoji:party-popper",
-    Clothing: "emojione-v1:womans-clothes",
-    Healthcare: "icon-park:health",
-    Travel: "emojione:tram-car",
-    Shopping: "emojione-v1:shopping-bags",
-    "Personal Care": "emojione:beating-heart",
-    Investments: "emojione-v1:stock-chart",
-    "Gifts & Donations": "emojione:wrapped-gift",
-    "Bills & utiltites": "flat-color-icons:money-transfer",
-    Others: "noto:coin",
+
+  // const [search, setsearch] = useState("");
+  const [Exceldata, setExceldata] = useState([]);
+  const exportTocsv = () => {
+    setExceldata(
+      allExpenses.map((expense) => ({
+        date: expense.expense.date,
+        category: expense.expense.category,
+        amount: expense.expense.expense,
+        Comment: expense.expense.comments,
+      }))
+    );
+    const data = Exceldata;
+
+    const fileName = "export_to_csv";
+    const exportType = exportFromJSON.types.csv;
+
+    exportFromJSON({ data, fileName, exportType });
   };
+
+  // const searchComment = (e) => {
+  //   e.preventDefault();
+  //   setsearch(e.target.value);
+  //   if (search === null) {
+  //     setfilteredExpense(allExpenses);
+  //     return;
+  //   }
+  //   const filteredExpenses = allExpenses.filter((expense) => {
+  //     return expense.expense.comments.toLowerCase().includes(search);
+  //   });
+  //   setfilteredExpense(filteredExpenses);
+  //   console.log(filteredExpense);
+  // };
+
   return (
     <Tablecontainer>
       <BtnContainer>
@@ -152,7 +169,7 @@ const Hometable = ({ allExpenses }) => {
           <PrintBtn2 onClick={printTableData}>
             <Icon icon="fluent:print-20-filled" color="#b72136" /> print
           </PrintBtn2>
-          <PrintBtn>
+          <PrintBtn onClick={exportTocsv}>
             <Icon icon="file-icons:microsoft-excel" color="#229a16" /> Export as
             xls
           </PrintBtn>
@@ -172,34 +189,15 @@ const Hometable = ({ allExpenses }) => {
             <th className="last">Delete</th>
           </TableRow>
 
-          {allExpenses[0] ? (
+          {allExpenses.length ? (
             allExpenses.map((expense, index) => {
               return (
-                <TableRow key={expense.id}>
-                  <td className="last">{index + 1}</td>
-                  <td className="mid">{expense.expense.date}</td>
-                  <td className="mid">{expense.expense.expense}</td>
-                  <CategoryWrapper>
-                    <CategoryText>{expense.expense.category}</CategoryText>
-                    <Icon
-                      icon={categoriesTotal[expense.expense.category]}
-                      width="24"
-                      height="24"
-                    />
-                  </CategoryWrapper>
-                  <td className="comment">{expense.expense.comments}</td>
-                  <td className="last">
-                    <EditBtn>
-                      <Icon icon="ci:edit" color="#b78103" /> edit
-                    </EditBtn>
-                  </td>
-                  <td className="last">
-                    <DelBtn>
-                      <Icon icon="fluent:delete-48-filled" color="#b72136" />
-                      delete
-                    </DelBtn>
-                  </td>
-                </TableRow>
+                <TableData
+                  key={expense.id}
+                  expenses={expense}
+                  uid={auth.user.uid}
+                  index={index}
+                />
               );
             })
           ) : (
@@ -211,6 +209,17 @@ const Hometable = ({ allExpenses }) => {
           )}
         </tbody>
       </CustomTable>
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </Tablecontainer>
   );
 };
@@ -218,3 +227,10 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 export default connect(mapStateToProps)(Hometable);
+
+// <SearchBox
+// type="search"
+// placeholder="Search comment"
+// value={search}
+// onChange={searchComment}
+// ></SearchBox>

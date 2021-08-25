@@ -4,7 +4,7 @@ import styled from "styled-components";
 import HomeCards from "../HomeCards";
 import Hometable from "../Hometable";
 import Navbar from "./Navbar";
-import { Icon } from "@iconify/react";
+
 import Loader from "../Loader";
 import "react-responsive-modal/styles.css";
 import { Modal } from "react-responsive-modal";
@@ -131,6 +131,7 @@ const SubmitBtn = styled.button`
     padding: 10px;
   }
 `;
+
 const ModalHeader = styled.h3``;
 const Home = (props) => {
   const [allExpenses, setallExpenses] = useState([]);
@@ -167,7 +168,7 @@ const Home = (props) => {
     database
       .collection(userId)
       .orderBy("date", "desc")
-      // .limit(3)
+      // .limit(10)
       .onSnapshot((snapshot) => {
         setallExpenses(
           snapshot.docs.map((doc) => ({
