@@ -290,7 +290,6 @@ const Home = (props) => {
           <SubmitBtn onClick={submitForm}>{buttonText}</SubmitBtn>
         </ModalContainer>
       </Modal>
-      <Navbar />
       {cardData.isloaded ? (
         <MainContainer>
           <HomeCards

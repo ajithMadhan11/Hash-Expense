@@ -6,6 +6,7 @@ import { authUser } from "./action";
 import { connect } from "react-redux";
 import Home from "./Components/Core/Home";
 import Loader from "./Components/Loader";
+import Navbar from "./Components/Core/Navbar";
 
 const App = (props) => {
   useEffect(() => {
@@ -35,6 +36,8 @@ const App = (props) => {
   }, []);
   return (
     <>
+      <Navbar />
+
       {!props.auth.isLoaded ? (
         <Loader />
       ) : props.auth.authenticated ? (
