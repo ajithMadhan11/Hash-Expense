@@ -1,5 +1,6 @@
 import "firebase/firestore";
 import { database } from "../../FirebaseConfig";
+import moment from "moment";
 
 export const addExpenseToDatabase = (
   userId,
@@ -117,4 +118,52 @@ export const expenseOfEachCategory = (allExpense) => {
 
   categories.map((category) => findTotal(category, allExpense));
   return categoriesTotal;
+};
+
+export const moneySpentinEachmonth = (allExpense) => {
+  let months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "1Oct",
+    "Nov",
+    "Dec",
+  ];
+  let monthsDetails = {
+    Jan: 0,
+    Feb: 0,
+    Mar: 0,
+    Apr: 0,
+    May: 0,
+    Jun: 0,
+    Jul: 0,
+    Aug: 0,
+    Sep: 0,
+    Oct: 0,
+    Nov: 0,
+    Dec: 0,
+  };
+  const findMonthTotal = (mon, allExpense) => {
+    let temp = allExpense
+      .filter(
+        (expense) =>
+          moment(expense.expense.date).format("MMM").toString() ==
+          mon.toString()
+      )
+      .reduce((sum, expense) => {
+        return (sum += Number(expense.expense.expense));
+      }, 0);
+
+    monthsDetails = { ...monthsDetails, [mon]: temp };
+  };
+  months.map((month) => {
+    findMonthTotal(month, allExpense);
+  });
+  return monthsDetails;
 };

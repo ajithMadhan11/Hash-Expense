@@ -168,7 +168,7 @@ const Home = (props) => {
     database
       .collection(userId)
       .orderBy("date", "desc")
-      // .limit(10)
+      .limit(10)
       .onSnapshot((snapshot) => {
         setallExpenses(
           snapshot.docs.map((doc) => ({
@@ -242,6 +242,8 @@ const Home = (props) => {
   };
   return (
     <>
+      <Navbar />
+
       <Modal
         open={open}
         onClose={onCloseModal}

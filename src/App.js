@@ -9,6 +9,7 @@ import Loader from "./Components/Loader";
 import Navbar from "./Components/Core/Navbar";
 
 const App = (props) => {
+  console.log(props);
   useEffect(() => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -36,8 +37,6 @@ const App = (props) => {
   }, []);
   return (
     <>
-      <Navbar />
-
       {!props.auth.isLoaded ? (
         <Loader />
       ) : props.auth.authenticated ? (

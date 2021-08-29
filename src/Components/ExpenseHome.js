@@ -7,6 +7,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TableData from "./TableData";
 import exportFromJSON from "export-from-json";
+import { database } from "../FirebaseConfig";
 
 const CustomTable = styled.table`
   width: 100%;
@@ -125,13 +126,32 @@ const SearchBox = styled.input.attrs((props) => ({
     padding: 10px;
   }
 `;
-const Hometable = ({ allExpenses, auth }) => {
+const ExpenseHome = ({ uid }) => {
+  const [allExpenses, setallExpense] = useState([]);
+  const [filter, setfilter] = useState([]);
+  useEffect(() => {
+    getTotalExpenseOfaUser(uid);
+  }, []);
+  const getTotalExpenseOfaUser = async (userId) => {
+    await database
+      .collection(userId)
+      .orderBy("date", "desc")
+      .onSnapshot((snapshot) => {
+        setallExpense(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            expense: doc.data(),
+          }))
+        );
+      });
+  };
+
   const tableRef = useRef();
   const printTableData = () => {
     window.print();
   };
 
-  // const [search, setsearch] = useState("");
+  const [search, setsearch] = useState("");
   const [Exceldata, setExceldata] = useState([]);
   const exportTocsv = () => {
     setExceldata(
@@ -150,19 +170,18 @@ const Hometable = ({ allExpenses, auth }) => {
     exportFromJSON({ data, fileName, exportType });
   };
 
-  // const searchComment = (e) => {
-  //   e.preventDefault();
-  //   setsearch(e.target.value);
-  //   if (search === null) {
-  //     setfilteredExpense(allExpenses);
-  //     return;
-  //   }
-  //   const filteredExpenses = allExpenses.filter((expense) => {
-  //     return expense.expense.comments.toLowerCase().includes(search);
-  //   });
-  //   setfilteredExpense(filteredExpenses);
-  //   console.log(filteredExpense);
-  // };
+  const searchComment = (e) => {
+    e.preventDefault();
+    setsearch(e.target.value);
+    if (search === "") {
+      setfilter(allExpenses);
+      return;
+    }
+    const filteredExpenses = allExpenses.filter((expense) => {
+      return expense.expense.comments.toLowerCase().includes(search);
+    });
+    setfilter(filteredExpenses);
+  };
 
   return (
     <Tablecontainer>
@@ -176,7 +195,7 @@ const Hometable = ({ allExpenses, auth }) => {
             xls
           </PrintBtn>
         </PrintContainer>
-        <RecordsBtn>Last {allExpenses.length} records</RecordsBtn>
+        <RecordsBtn>{allExpenses.length} records</RecordsBtn>
       </BtnContainer>
 
       <CustomTable ref={tableRef}>
@@ -186,18 +205,37 @@ const Hometable = ({ allExpenses, auth }) => {
             <th className="mid">Date</th>
             <th className="mid">Expense</th>
             <th className="mid">Category</th>
-            <th className="comment">Comment</th>
+            <th className="comment">
+              Comment &nbsp;
+              <SearchBox
+                type="search"
+                placeholder="Search comment"
+                value={search}
+                onChange={searchComment}
+              ></SearchBox>
+            </th>
             <th className="last">Edit</th>
             <th className="last">Delete</th>
           </TableRow>
 
-          {allExpenses.length ? (
+          {filter.length ? (
+            filter.map((expense, index) => {
+              return (
+                <TableData
+                  key={expense.id}
+                  expenses={expense}
+                  uid={uid}
+                  index={index}
+                />
+              );
+            })
+          ) : allExpenses.length ? (
             allExpenses.map((expense, index) => {
               return (
                 <TableData
                   key={expense.id}
                   expenses={expense}
-                  uid={auth.user.uid}
+                  uid={uid}
                   index={index}
                 />
               );
@@ -228,11 +266,4 @@ const Hometable = ({ allExpenses, auth }) => {
 const mapStateToProps = (state) => ({
   auth: state.auth,
 });
-export default connect(mapStateToProps)(Hometable);
-
-// <SearchBox
-// type="search"
-// placeholder="Search comment"
-// value={search}
-// onChange={searchComment}
-// ></SearchBox>
+export default connect(mapStateToProps)(ExpenseHome);

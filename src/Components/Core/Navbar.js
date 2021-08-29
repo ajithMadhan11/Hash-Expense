@@ -136,8 +136,8 @@ const Navbar = (props) => {
           </Link>
         </MenuItems>
         <MenuItems>
-          <Link style={currenttab(history, "/settings")} to="/settings">
-            <Icon icon="ci:settings-filled" /> Settings
+          <Link style={currenttab(history, "/allexpense")} to="/allexpense">
+            <Icon icon="cil:clear-all" /> All Expense
           </Link>
         </MenuItems>
         <MenuItems onClick={signoutFromApp}>
@@ -159,8 +159,8 @@ const Navbar = (props) => {
           </Link>
         </MobileNavbarItems>
         <MobileNavbarItems>
-          <Link style={currenttab(history, "/settings")} to="/settings">
-            <Icon icon="ci:settings-filled" width="23" height="23" />
+          <Link style={currenttab(history, "/allexpense")} to="/allexpense">
+            <Icon icon="cil:clear-all" width="23" height="23" />
           </Link>
         </MobileNavbarItems>
         <MobileNavbarItems>

@@ -3,12 +3,12 @@ import { connect } from "react-redux";
 import { authUser } from "../action";
 import { database, auth } from "../FirebaseConfig";
 import Login from "./Authentication/Login";
-import StatsHome from "./StatsHome";
+import ExpenseHome from "./ExpenseHome";
 import Navbar from "./Core/Navbar";
 import Loader from "./Loader";
 import firebase from "firebase/app";
 
-const Stats = (props) => {
+const Allexpense = (props) => {
   const uid = props.auth.user.uid;
   console.log(props);
 
@@ -44,7 +44,6 @@ const Stats = (props) => {
     await database
       .collection(userId)
       .orderBy("date", "desc")
-      .limit(10)
       .onSnapshot((snapshot) => {
         setstate(
           snapshot.docs.map((doc) => ({
@@ -56,10 +55,11 @@ const Stats = (props) => {
   };
   return (
     <>
+      <Navbar />
       {!props.auth.isLoaded ? (
         <Loader />
       ) : props.auth.authenticated ? (
-        <StatsHome allExpense={state} />
+        <ExpenseHome uid={uid} />
       ) : (
         <Login />
       )}
@@ -69,4 +69,4 @@ const Stats = (props) => {
 const mapStateToProps = (state) => ({
   auth: state.auth,
 });
-export default connect(mapStateToProps)(Stats);
+export default connect(mapStateToProps)(Allexpense);

@@ -6,6 +6,7 @@ import App from "./App";
 import Home from "./Components/Core/Home";
 import Notfound from "./Components/Notfound";
 import Stats from "./Components/Stats";
+import Allexpense from "./Components/Allexpense";
 const Routes = () => {
   return (
     <BrowserRouter>
@@ -15,6 +16,7 @@ const Routes = () => {
         <Route path="/signin" exact component={Login} />
         <Route path="/signup" exact component={Register} />
         <Route path="/stats" exact component={Stats} />
+        <Route path="/allexpense" exact component={Allexpense} />
         <Route path="*" exact component={Notfound} />
       </Switch>
     </BrowserRouter>

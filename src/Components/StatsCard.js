@@ -11,12 +11,14 @@ const CardContainer = styled.div`
   justify-content: space-around;
   align-items: center;
   box-shadow: 0px 0px 26px -4px rgba(0, 0, 0, 0.25);
-
+  margin: 20px 0 20px 0;
   border-radius: 33px;
 
   @media (max-width: 768px) {
     width: 100%;
     margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
     height: 120px;
   }
 `;
@@ -24,7 +26,6 @@ const CardField = styled.div`
   display: flex;
   flex-direction: column;
   margin: 30px;
-  /* justify-content: center; */
 `;
 const FieldName = styled.p`
   font-size: 25px;
@@ -36,7 +37,8 @@ const FieldAmount = styled.p`
   font-weight: 600;
   color: #27b05a;
 `;
-const HomeCards = ({ data, type, icon }) => {
+
+const StatsCard = ({ type, data }) => {
   function numberWithCommas(x) {
     if (typeof x != "number") {
       return x;
@@ -66,9 +68,9 @@ const HomeCards = ({ data, type, icon }) => {
         <FieldName>{type}</FieldName>
         <FieldAmount>{numberWithCommas(data) || "-"}</FieldAmount>
       </CardField>
-      <Icon icon={categoriesTotal[icon]} width="64" height="64" />
+      <Icon icon={categoriesTotal[type]} width="64" height="64" />
     </CardContainer>
   );
 };
 
-export default HomeCards;
+export default StatsCard;
