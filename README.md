@@ -41,7 +41,7 @@
 
 - Create a new firebase project 
 
-- Be Sure to Choose Realtime Database , and not firestore
+- Be Sure to Choose Firestore , and not Realtime
 
 - change database rules
   
